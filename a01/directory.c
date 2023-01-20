@@ -5,6 +5,16 @@
 #include <limits.h>
 #include <sys/stat.h>
 
+char* getCurrentDir(){
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != NULL){
+        return cwd;
+    }
+    else{
+        printf("getcwd() error.");
+    }
+}
+
 //implement me with user input
 //how to make dynamic string for user input?
 int createDir(char* dirName){
@@ -21,24 +31,23 @@ int deleteDir(char* dirName){
     return 0;
 }
 
-int getCurrentDir(){
-   char cwd[PATH_MAX];
-   if (getcwd(cwd, sizeof(cwd)) != NULL) {
-       printf("Current working Directory is: %s\n", cwd);
-   } 
-   else {
-       perror("getcwd() Directory error");
-       return 1;
-   }
-   return 0;
+int workingDir(char* cwd){
+    cwd = getCurrentDir();
+    printf("Current working Directory is: %s\n", cwd);
+    return 0;
 }
 
 // test me more, doesnt go further back than CP386
-int stepBackDir(){
-    char cwd[PATH_MAX];
-    printf("Working Directory Before Operation: %s\n", cwd);
+int stepBackDir(char* cwd){
+    char* currCwd = getCurrentDir();
+    printf("Working Directory Before Operation: %s\n", currCwd);
     int stepBack = chdir("..");
-    printf("Working Directory After Operation: %s\n", cwd);
+    if (stepBack != 0) {
+        printf("Error: chdir() failed.\n");
+        return 1;
+    }
+    currCwd = getCurrentDir();
+    printf("Working Directory After Operation: %s\n", currCwd);
     return 0;
 }
 
@@ -68,7 +77,7 @@ int main(){
                 deleteDir(dirName);
                 continue;
             case '3':
-                getCurrentDir();
+                workingDir();
                 continue;
             case '4':
                 printf("Stepping back one directory...\n");
