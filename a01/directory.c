@@ -1,33 +1,44 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <unistd.h>
+#include <limits.h>
+#include <sys/stat.h>
 
 //implement me with user input
 //how to make dynamic string for user input?
-int createDir(dirName){
-    int makeDir = system("mkdir %s", dirName);
-    printf("check directory '%s' has been created. \n", dirName);
+int createDir(char* dirName){
+    int makeDir = mkdir(dirName, 0777);
+    printf("Directory is created successfully.");
     return 0;
 }
 
 //implement me with user input
 //error handling with invalid directories not in ls?
-int deleteDir(dirName){
-    int removeDir = system("rmdir testDirectory");
-    printf("check directory 'testDirectory' has been removed. \n");
+int deleteDir(char* dirName){
+    int removeDir = rmdir(dirName);
+    printf("Directory is removed successfully.");
     return 0;
 }
 
 int getCurrentDir(){
-    printf("the current directory is: \n");
-    int currentDir = system("pwd");
-    return 0;
+   char cwd[PATH_MAX];
+   if (getcwd(cwd, sizeof(cwd)) != NULL) {
+       printf("Current working Directory is: %s\n", cwd);
+   } 
+   else {
+       perror("getcwd() Directory error");
+       return 1;
+   }
+   return 0;
 }
 
 // test me more, doesnt go further back than CP386
 int stepBackDir(){
-    int stepBack = system("cd -");
-    printf("stepped back one directory.\n");
+    char cwd[PATH_MAX];
+    printf("Working Directory Before Operation: %s\n", cwd);
+    int stepBack = chdir("..");
+    printf("Working Directory After Operation: %s\n", cwd);
     return 0;
 }
 
@@ -38,31 +49,25 @@ int readDir(){
 }
 
 int main(){
-    printf("----------------------------------------------\n");
-    printf("Welcome to Matt's linux terminal!\n");
-    printf("----------------------------------------------\n");
-    printf("Here are the commands\nTo create a new directory, press 1.\nTo remove an existing directory, press 2.\nTo get the current working directory, press 3.\nTo move one level up from current directory, press 4.\nTo read the current directory, press 5.\nTo close the current directory, press 6.\nPress q to quit.\n");
     char input;
+    char dirName[100];
     while (1){
+        printf("Select the option(s) appropriately by entering the number:\n Enter 1 for creating a directory\n Enter 2 for removing directory\n Enter 3 for printing working directory\n Enter 4 for changing directory one level up\n Enter 5 for reading the contents of directory\n Enter 6 for closing the current directory\n Enter q to exit the program\n");
         input = getchar();
         switch (input){
             case 'q':
-                printf("Goodbye.\n");
                 break;
             case '1':
-                printf("Enter a valid name for a new directory.\n");
-                char dirName[100];
+                printf("Enter the Directory name you want to create:\n");
                 scanf("%s", dirName);
                 createDir(dirName);
                 continue;
             case '2':
-                printf("Enter the name of the directory you would like to delete.\n");
-                char dirName[100];
+                printf("Enter the Directory name you want to remove:\n");
                 scanf("%s", dirName);
                 deleteDir(dirName);
                 continue;
             case '3':
-                printf("Getting data on current directory...\n");
                 getCurrentDir();
                 continue;
             case '4':
