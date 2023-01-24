@@ -4,14 +4,17 @@
 #include <unistd.h>
 #include <limits.h>
 #include <sys/stat.h>
+#include <dirent.h>
 
 char* getCurrentDir(){
-    char cwd[PATH_MAX];
-    if (getcwd(cwd, sizeof(cwd)) != NULL){
+    char* cwd = NULL;
+    size_t size = 0;
+    if (getcwd(cwd, size) != NULL) {
         return cwd;
-    }
-    else{
-        printf("getcwd() error.");
+    } 
+    else {
+        perror("getcwd error");
+        return NULL;
     }
 }
 
@@ -19,53 +22,79 @@ char* getCurrentDir(){
 //how to make dynamic string for user input?
 int createDir(char* dirName){
     int makeDir = mkdir(dirName, 0777);
-    printf("Directory is created successfully.");
-    return 0;
+    if (makeDir == 0){
+        printf("Directory is created successfully.");
+        return 0;
+    }
+    else{
+        printf("mkdir error");
+    }
+    
+    return 1;
 }
 
 //implement me with user input
 //error handling with invalid directories not in ls?
 int deleteDir(char* dirName){
     int removeDir = rmdir(dirName);
-    printf("Directory is removed successfully.");
-    return 0;
+    if (removeDir == 0){
+        printf("Directory is removed successfully.");
+        return 0;
+    }
+    else{
+        printf("rmdir error");
+    }
+    return 1;
 }
 
-int workingDir(char* cwd){
-    cwd = getCurrentDir();
-    printf("Current working Directory is: %s\n", cwd);
-    return 0;
+char *workingDir(){
+    static char cwd[250];
+	getcwd(cwd,sizeof(cwd));	//function to print current directory
+	return cwd;
 }
 
 // test me more, doesnt go further back than CP386
 int stepBackDir(char* cwd){
-    char* currCwd = getCurrentDir();
-    printf("Working Directory Before Operation: %s\n", currCwd);
     int stepBack = chdir("..");
-    if (stepBack != 0) {
-        printf("Error: chdir() failed.\n");
-        return 1;
-    }
-    currCwd = getCurrentDir();
-    printf("Working Directory After Operation: %s\n", currCwd);
+    printf("Directory changed successfully.\n");
     return 0;
 }
 
 int readDir(){
-    int listedDirectories = system("ls");
+    DIR *directory;
+	struct dirent *directoryContent;
+	directory = opendir(".");
+	if (directory){
+		while ((directoryContent = readdir(directory)) != NULL) {
+
+			   printf("%s\n",directoryContent->d_name);
+		}
+	}
     printf("all directories listed.\n");
     return 0;
 }
 
+int closeDir(){
+	DIR *currentDir;
+	currentDir = opendir(".");
+	closedir(currentDir);	
+	printf("Directory Closed Successfully.\n");
+	return 0;
+}
+
+
+
 int main(){
     char input;
     char dirName[100];
+    char cwd[PATH_MAX];
+    char currCwd[PATH_MAX];
     while (1){
-        printf("Select the option(s) appropriately by entering the number:\n Enter 1 for creating a directory\n Enter 2 for removing directory\n Enter 3 for printing working directory\n Enter 4 for changing directory one level up\n Enter 5 for reading the contents of directory\n Enter 6 for closing the current directory\n Enter q to exit the program\n");
-        input = getchar();
+        printf("Select the option(s) appropriately by entering the number:\n Enter 1 for creating a directory\n Enter 2 for removing directory\n Enter 3 for printing working directory\n Enter 4 for changing directory one level up\n Enter 5 for reading the contents of directory\n Enter 6 for closing the current directory\n Enter q to exit the program\n ");
+        scanf(" %c", &input);
         switch (input){
             case 'q':
-                break;
+                return 0;
             case '1':
                 printf("Enter the Directory name you want to create:\n");
                 scanf("%s", dirName);
@@ -77,15 +106,22 @@ int main(){
                 deleteDir(dirName);
                 continue;
             case '3':
-                workingDir();
+                printf("Current working directory is: %s \n", workingDir());
                 continue;
             case '4':
                 printf("Stepping back one directory...\n");
-                stepBackDir();
+                stepBackDir(cwd);
                 continue;
             case '5':
                 printf("Reading data on current directory...\n");
                 readDir();
+                continue;
+            case '6':
+                printf("Reading data on current directory...\n");
+                readDir();
+                continue;
+            default:
+                printf("Invalid input, please follow the commands listed below...");
                 continue;
         }
     }
