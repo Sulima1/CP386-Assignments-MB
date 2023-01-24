@@ -56,8 +56,13 @@ char *workingDir(){
 // test me more, doesnt go further back than CP386
 int stepBackDir(char* cwd){
     int stepBack = chdir("..");
-    printf("Directory changed successfully.\n");
-    return 0;
+    if (stepBack == 0){
+        printf("Directory changed successfully.\n");
+        return 0;
+    }
+    else {
+        printf("chdir() error");
+    }
 }
 
 int readDir(){
@@ -81,7 +86,6 @@ int closeDir(){
 	printf("Directory Closed Successfully.\n");
 	return 0;
 }
-
 
 
 int main(){
