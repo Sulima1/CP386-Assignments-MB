@@ -4,49 +4,59 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 
-int main(){
+int main(int argc, char *argv[]){
 
-    // open input as rp (readpage) and give it 0777 permission
-    int rp = open("input.txt", O_RDONLY | O_CREAT, 0777);
-    if(rp == -1){
-        // if filename not found
-        perror("Insufficient parameters passed. \n");
+    if (argc == 3) {
+        int outputFile;
+        int inputFile;
+
+        char *inputName = argv[1];
+        char *outputName = argv[2];
+
+        char buffer[1];
+
+        if (access(inputName, F_OK) == -1){
+            perror("Missing input file \n");
+            exit(1);
+        }
+        else{
+            printf("File opened successfully");
+            inputFile = open(inputName, O_RDONLY, 0777);
+            
+            // if creat() returns errno EEXIST, remove existing and replace with new
+            if (access(outputName, F_OK) == 0){
+                remove(outputName); 
+            }
+
+            // declare permissions for outputFile
+            mode_t mode = O_WRONLY | O_CREAT;
+
+            // open the file and read 
+            outputFile = open(outputName, mode);
+
+            ssize_t len; // how many characters are written per iteration
+
+            if (len = read(inputFile, buffer, 1)  == -1){
+                perror("File reading error");
+                exit(1);
+            }
+
+            while ((len = read(inputFile, buffer, 1) ) != 0){
+                // loop through file and write to wp (writepage)
+                write(outputFile, buffer, len);
+            }
+
+            // close files at the end
+            close(inputFile);
+            close(outputFile);
+
+        }
     }
-    else {
-        printf("File opened successfully");
+    else{
+        printf("Insufficient parameters passed. \n");
     }
-    
-    // declare permissions for outputFile
-    mode_t mode = O_WRONLY | O_CREAT | O_EXCL;
-    char *filename = "output.txt";
-    // errnum for error handling if file exists 
-    int errnum = errno;
-
-    int outputFile = creat(filename, mode);
-
-    // if creat() returns errno EEXIST, remove existing and replace with new
-    if (errnum == EEXIST){
-        int remove(filename); // warning: parameter names (without types) in function declaration
-        int creat(filename, mode);// warning: parameter names (without types) in function declaration
-    }
-
-    // open the file (fopen?) and read 
-    int wp = fopen("output.txt", mode);  // warning: passing argument 2 of ‘fopen’ makes pointer from integer without a cast
-    // + warning: initialization of ‘int’ from ‘FILE *’ makes integer from pointer without a cast
-
-    // not too sure what these do but I think I need them for the while loop
-    ssize_t len;
-    char buffer[100];
-
-    while ((len = read(wp, buffer, 50))){
-        // loop through file and write to wp (writepage)
-        write(wp, buffer, len);
-    }
-
-    // close files at the end
-    close(rp);
-    close(wp);
-
+    return 0;
 }
