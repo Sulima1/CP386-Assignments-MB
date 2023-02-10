@@ -1,0 +1,27 @@
+The output of: uname -a : is
+>>>>>>>>>>>>>>>
+Linux
+<<<<<<<<<<<<<<<
+The output of: free -m : is
+>>>>>>>>>>>>>>>
+               total        used        free      shared  buff/cache   available
+Mem:         8093668      721836     7011216        2512      360616     7138704
+Swap:        2097152           0     2097152
+<<<<<<<<<<<<<<<
+The output of: ls -l -a -F : is
+>>>>>>>>>>>>>>>
+assignment_average.c
+output.txt
+process
+process_management.c
+sample_in_grades.txt
+sample_in_process.txt
+<<<<<<<<<<<<<<<
+The output of: whoami : is
+>>>>>>>>>>>>>>>
+root
+<<<<<<<<<<<<<<<
+The output of: pwd : is
+>>>>>>>>>>>>>>>
+/mnt/c/users/mattb/documents/github/cp386-assignments-mb/a02
+<<<<<<<<<<<<<<<
