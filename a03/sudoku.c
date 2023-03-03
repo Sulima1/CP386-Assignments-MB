@@ -22,20 +22,24 @@ int **createSudoku(){
     return array;
 }
 
-int checkSudoku(int **sudokuArray){
+int checkSudoku(int **sudokuArray){   
+
     int *validNumbers = malloc(9 * sizeof(int*));
 
     for (int i = 1; i <= 9; i++){
         validNumbers[i-1] = i; 
     }
+
+
+    pthread_t rowThread, columnThread;
+
+
 }
 
 int main(char *argv[], int argc){
     int **sudokuArray;
 
     sudokuArray = createSudoku();
-
-    pthread_t rowThread, columnThread;
 
     checkSudoku(sudokuArray);
 
